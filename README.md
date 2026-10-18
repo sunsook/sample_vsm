@@ -7,9 +7,13 @@ MISRA C:2023 위배가 일부러 들어 있습니다. 코드 주석에는 로직
 
 ```
 vsm_STATIC/
-  Makefile           빌드 — CC 는 STATIC SE 래퍼(GCC9.5) · 산출물 vsm_demo.exe
-  config.bat         CT 동봉 gcc 9.5.0 을 PATH 에 · chcp 65001
-  make.cmd           mingw32-make 호출
+  build.bat          GCC 설치(필요할 때만) → 빌드 → vsm_demo.exe 실행
+  setup.ps1          GCC(WinLibs 10.5.0 i686)를 C:\vsm-tools\gcc 에 설치 · local.mk 작성
+  Makefile           일반 GCC 빌드 — CC 는 local.mk(없으면 PATH 의 gcc) · 산출물 vsm_demo.exe
+  Makefile.static    STATIC SE 래퍼(GCC9.5) 빌드용 원본 Makefile
+  config.bat         (STATIC 용) CT 동봉 gcc 9.5.0 을 PATH 에 · chcp 65001
+  make.cmd           (STATIC 용) mingw32-make 호출
+  CLAUDE.md          Claude Code 빌드 안내
   docs/요구사항.md    요구사항 SR-001 ~ SR-011
   include/
     vsm_types.h      경고 등급 enum(vsm_warn_t) · 차속 한계값 · 샘플 수
@@ -38,9 +42,25 @@ vsm_STATIC/
 
 ## 빌드 · 실행
 
+준비물은 Windows 10 이상 · Git · 인터넷 연결입니다. 컴파일러는 첫 실행 때 자동으로 받습니다(약 190MB, 해시 검증 후 설치).
+
+```
+git clone https://github.com/sunsook/sample_vsm
+cd sample_vsm
+.\build.bat                  # 설치 경로를 바꾸려면 .\build.bat D:\tools\gcc
+```
+
+Claude Code 에서는 이 폴더를 열고 「빌드해줘」라고 하면 `CLAUDE.md` 안내대로 같은 과정을 실행합니다.
+
+정상이면 마지막 줄에 `over_count=1` 이 나옵니다. 컴파일 경고 5건(`-Wswitch` 등)은 의도된 위배에서 나오는 것입니다.
+
+### STATIC SE 래퍼로 빌드할 때
+
+CT · STATIC SE 가 설치된 PC 에서만 씁니다.
+
 ```
 config.bat
-make clean
-make
+make.cmd -f Makefile.static clean
+make.cmd -f Makefile.static
 vsm_demo.exe
 ```
