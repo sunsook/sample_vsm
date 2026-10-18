@@ -13,7 +13,9 @@ vsm_STATIC/
   Makefile.static    STATIC SE 래퍼(GCC9.5) 빌드용 원본 Makefile
   config.bat         (STATIC 용) CT 동봉 gcc 9.5.0 을 PATH 에 · chcp 65001
   make.cmd           (STATIC 용) mingw32-make 호출
-  CLAUDE.md          Claude Code 빌드 안내
+  CLAUDE.md          Claude Code 빌드 · 브랜치 · PR 안내
+  scripts/
+    new-cohort.ps1   (소유자 전용) 차수 · 실습생 브랜치 생성, 협업자 초대
   docs/요구사항.md    요구사항 SR-001 ~ SR-011
   include/
     vsm_types.h      경고 등급 enum(vsm_warn_t) · 차속 한계값 · 샘플 수
@@ -53,6 +55,19 @@ cd sample_vsm
 Claude Code 에서는 이 폴더를 열고 「빌드해줘」라고 하면 `CLAUDE.md` 안내대로 같은 과정을 실행합니다.
 
 정상이면 마지막 줄에 `over_count=1` 이 나옵니다. 컴파일 경고 5건(`-Wswitch` 등)은 의도된 위배에서 나오는 것입니다.
+
+## 브랜치 · PR 규칙
+
+| 브랜치 | 누가 바꾸나 |
+|---|---|
+| `main` | 저장소 소유자만 — 원본 그대로 둡니다 |
+| `cohort/<교육 시작일>` (예: `cohort/20261026`) | 저장소 소유자만 |
+| `class/<교육 시작일>/<GitHub ID>` | 실습생 본인 브랜치 — PR 로만 바뀝니다 |
+| `work/<GitHub ID>/<주제>` | 실습생 작업 브랜치 — 자유롭게 push |
+
+실습생은 본인 `class/` 브랜치에서 `work/` 브랜치를 따서 고치고, 본인 `class/` 브랜치로 PR 을 엽니다.
+PR 은 승인 0건으로 merge 할 수 있지만, 리뷰 코멘트가 있으면 모두 Resolve 해야 하고 merge 방식은 Squash 만 됩니다.
+Claude Code 에서 「SR-002 고쳐서 PR 올려줘」처럼 요청하면 `CLAUDE.md` 절차대로 브랜치 · PR 을 만듭니다(GitHub CLI `gh` 로그인 필요).
 
 ### STATIC SE 래퍼로 빌드할 때
 
