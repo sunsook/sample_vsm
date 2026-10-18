@@ -4,6 +4,9 @@ rem usage: build.bat [install dir]   (default C:\vsm-tools\gcc)
 chcp 65001 > nul
 cd /d "%~dp0"
 
+rem PowerShell 7 module path breaks Windows PowerShell 5.1 cmdlets - reset it
+set "PSModulePath="
+
 if "%~1"=="" (
   powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup.ps1"
 ) else (

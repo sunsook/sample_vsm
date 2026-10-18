@@ -30,7 +30,10 @@ else {
         Invoke-WebRequest -Uri $Url -OutFile $Zip -UseBasicParsing
 
         # 받은 파일이 고정해 둔 해시와 다르면 설치하지 않는다
-        $actual = (Get-FileHash -Algorithm SHA256 $Zip).Hash.ToLower()
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        $fs = [System.IO.File]::OpenRead($Zip)
+        try { $actual = -join ($sha.ComputeHash($fs) | ForEach-Object { $_.ToString('x2') }) }
+        finally { $fs.Dispose() }
         if ($actual -ne $Sha256) {
             throw "다운로드 파일 해시가 다릅니다 (기대 $Sha256 / 실제 $actual)"
         }
@@ -42,7 +45,8 @@ else {
             if ($LASTEXITCODE -ne 0) { throw "tar 압축 해제 실패 (exit $LASTEXITCODE)" }
         }
         else {
-            Expand-Archive -Path $Zip -DestinationPath $Work -Force
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($Zip, $Work)
         }
 
         # zip 안의 mingw32 폴더를 설치 경로로 옮긴다
