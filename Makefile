@@ -1,12 +1,12 @@
-# 차속 감시(VSM) 예제 - 1일차 오후 STATIC SE 실습용 배포 소스
+# 차속 감시(VSM) 예제 - 일반 GCC 빌드
 #
-# CC 는 STATIC SE 의 gcc 래퍼로 고정돼 있다 - 사전 준비 안내대로 Target IDE 래퍼 이름을 정확히 「GCC9.5」로
-# 만들면 경로가 같아 Makefile 을 만지지 않고 그대로 빌드한다 (make clean 뒤 make).
-# 래퍼 이름이 다르면 「gcc.exe 를 찾을 수 없다」로 빌드가 실패한다 - 사전 준비 안내 3장 · 문제 해결 참조.
-# 원본 컴파일러(래퍼가 부르는 것)는 CT 가 설치한 gcc 9.5.0 (C:\Users\<계정>\CT\CodeScroll\Compiler\gcc\9.5.0\32bit\bin).
-# make 는 CT 동봉 mingw32-make.exe - config.bat 로 PATH 를 잡고 make.cmd 로 부른다.
+# 컴파일러는 setup.ps1 이 설치한 GCC(WinLibs 10.5.0 i686)를 쓴다 - 경로는 local.mk 에 기록된다.
+# local.mk 가 없으면 PATH 의 gcc 를 쓴다.
+# STATIC SE 래퍼로 빌드하려면 Makefile.static 을 쓴다 (mingw32-make -f Makefile.static).
 #
-CC      = C:\Suresoft\STATIC-5\static-standalone\wrapper\GCC9.5\gcc.exe
+CC      = gcc
+-include local.mk
+
 CFLAGS  = -std=c11 -Wall -Wextra -Iinclude
 
 TARGET  = vsm_demo.exe
@@ -23,7 +23,7 @@ $(TARGET): $(OBJS)
 
 # Windows cmd / PowerShell 기준
 clean:
-	-cmd.exe /C del /Q $(subst /,\,$(OBJS)) $(TARGET)
+	-cmd.exe /C del /Q $(subst /,\,$(OBJS)) $(TARGET) 2>nul
 
 # Git Bash 등 POSIX 셸용
 clean-sh:
