@@ -1,0 +1,48 @@
+# vsm_STATIC — VSM(Vehicle Speed Monitor) 예제 원본
+
+> 실습 덱: **정적 검증 실습 — STATIC** (`d1pm-정적검증실습—STATIC`)
+
+차속 센서 값을 받아 잡음을 거르고, 차속에 따라 경고 등급을 판정해 진단 이력에 남기는 C 모듈입니다.
+MISRA C:2023 위배가 일부러 들어 있습니다. 코드 주석에는 로직 설명과 요구사항 ID(`docs/요구사항.md` SR-001 ~ SR-011)만 남기고 위배 표시는 달지 않았습니다.
+
+## 구성
+
+```
+vsm_STATIC/
+  Makefile           빌드 — CC 는 STATIC SE 래퍼(GCC9.5) · 산출물 vsm_demo.exe
+  config.bat         CT 동봉 gcc 9.5.0 을 PATH 에 · chcp 65001
+  make.cmd           mingw32-make 호출
+  docs/요구사항.md    요구사항 SR-001 ~ SR-011
+  include/
+    vsm_types.h      경고 등급 enum(vsm_warn_t) · 차속 한계값 · 샘플 수
+    speed_monitor.h  차속 판정
+    sensor_filter.h  센서 필터
+    diag_log.h       진단 이력
+  src/
+    main.c           데모 진입점 — 차속 0 ~ 220 을 20 씩 올리며 판정 결과를 출력
+    speed_monitor.c  sm_evaluate() · sm_reset() · sm_over_count()
+    sensor_filter.c  sf_push() · sf_latest() · sf_average() — 8칸 링 버퍼
+    diag_log.c       dl_record() · dl_parse_threshold() · dl_read_status_reg()
+```
+
+## 함수
+
+| 함수 | 하는 일 |
+|---|---|
+| `sm_evaluate(speed_kph, brake_on)` | 차속으로 경고 등급(NONE · LOW · MID · HIGH)을 판정하고 과속 횟수를 센다 |
+| `sm_reset(ecu_id)` | 과속 카운터 초기화 |
+| `sm_over_count()` | 과속 횟수 |
+| `sf_push(value)` · `sf_latest()` | 링 버퍼에 센서 값을 넣고 · 최근 값을 꺼낸다 |
+| `sf_average(samples, count)` | 샘플 평균 |
+| `dl_record(warn)` | 경고 등급을 진단 이력에 기록 |
+| `dl_parse_threshold(text)` | 임계값 문자열을 숫자로 — 해석 못 하면 -1 |
+| `dl_read_status_reg()` | 하드웨어 상태 레지스터(`0x40001000`) 읽기 — PC 에서는 호출하지 않는다 |
+
+## 빌드 · 실행
+
+```
+config.bat
+make clean
+make
+vsm_demo.exe
+```
