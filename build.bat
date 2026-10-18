@@ -20,5 +20,5 @@ mingw32-make clean
 mingw32-make
 if errorlevel 1 exit /b 1
 
-vsm_demo.exe
+"%~dp0vsm_demo.exe"
 exit /b %errorlevel%
